@@ -19,16 +19,24 @@ class YoloCSV:
     def _on_init(self):
         self.df = pd.read_csv(self.file_path)
 
-    def to_json(self):
+    def to_initial_json(self):
         """
         Doc Doc Doc
         """
 
         res = dict()
         res["file_name"] = self.file_path
-        res["valid_trap_nums"] = [int(v) for v in list(self.df["trap_num"].unique())]
+        res["trap_nums"] = [int(v) for v in list(self.df["trap_num"].unique())]
 
         return json.dumps(res)
+
+    def get_time_nums(self, trap_num):
+        """
+        Doc Doc Doc
+        """
+
+        q = self.query(trap_num=trap_num)
+        return [int(v) for v in list(q["time_num"].unique())]
 
     def query(self, trap_num=None, t_start=None, t_stop=None, total_objs=None, pred_id=None, write_csv=False):
         """
