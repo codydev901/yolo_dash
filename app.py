@@ -3,17 +3,35 @@ import dash
 import json
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 from helpers.selection import get_source_files, load_source_file, get_trap_nums, get_time_nums, run_query
 
+"""
+layout = [
+    dbc.Container([
+            dbc.Row([
+                dbc.Col(html.Div("Row 1 Col1"),
+                        style={'background-color': 'green'},
+                        width=3),
+                dbc.Col(html.Div("Row 1 Col2"),
+                        style={'background-color': 'yellow'},
+                        width=True)
+                     ],
+                    style={'background-color': 'blue'},
+                    className="h-100")
+    ],
+     fluid=True,
+     style={"height": "100vh"})
+    ]
+"""
+
 # Dash Stuff
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-# Layout
-app.layout = html.Div([
+query_layout = html.Div([
     # Title
     html.H2('Yolo CSV Tree Visualization'),
 
@@ -44,14 +62,44 @@ app.layout = html.Div([
     # Query
     html.Button('Query', id='query-button', n_clicks=0),
 
-    # Plot
-    dcc.Graph(id="graph-1", figure=go.Figure()),
-
     # Shared
     html.Div(id="yolo-csv", style={"display": "none"}),
     html.Div(id="yolo-query", style={"display": "none"})
 
 ])
+
+plot_layout = dcc.Graph(id="graph-1", figure=go.Figure(), responsive=True, style={"height": "100%", "width": "100%"})
+
+layout = [
+    dbc.Container([
+            dbc.Row([
+                dbc.Col([
+                    dbc.Row(query_layout,
+                            style={'background-color': 'red'},
+                            className="h-50"),
+                    dbc.Row(html.Div("RAW"),
+                            style={'background-color': 'yellow'},
+                            className="h-50"),
+                    ],
+                    width=3),
+                dbc.Col([
+                    dbc.Row(plot_layout,
+                            style={'background-color': 'orange'},
+                            className="h-75"),
+                    dbc.Row(html.Div("INFO"),
+                            style={'background-color': 'pink'},
+                            className="h-25")
+                    ],
+                    width=True)
+                    ],
+                    style={'background-color': 'blue'},
+                    className="h-100")
+    ],
+     fluid=True,
+     style={"height": "100vh"})
+    ]
+
+app.layout = html.Div(layout)
 
 
 # Source File
