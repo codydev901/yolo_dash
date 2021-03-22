@@ -4,6 +4,7 @@ import json
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
+import plotly.graph_objs as go
 from helpers.selection import get_source_files, load_source_file, get_trap_nums, get_time_nums, run_query
 
 # Dash Stuff
@@ -40,8 +41,11 @@ app.layout = html.Div([
         value=None
     ),
 
-    # Run Graph/Tree Button
+    # Query
     html.Button('Query', id='query-button', n_clicks=0),
+
+    # Plot
+    dcc.Graph(id="graph-1", figure=go.Figure()),
 
     # Shared
     html.Div(id="yolo-csv", style={"display": "none"}),
@@ -102,7 +106,7 @@ def set_time_num_value(value):
 
 
 # Query
-@app.callback([Output('yolo-query', 'children')],
+@app.callback([Output('graph-1', 'figure')],
               [Input('query-button', 'n_clicks')],
               [State('source-file-dropdown', 'value'),
                State('trap-num-dropdown', 'value'),
@@ -112,7 +116,7 @@ def click_query(click, source_file_value, trap_value, time_value):
     if source_file_value and trap_value and time_value:
         return [run_query(source_file_value, trap_value, time_value)]
 
-    return [[]]
+    return [go.Figure()]
 
 
 if __name__ == '__main__':

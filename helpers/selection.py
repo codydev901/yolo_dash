@@ -2,6 +2,7 @@ import os
 import json
 from helpers.yolo_csv import YoloCSV
 from helpers.yolo_tree import YoloTree
+from helpers.yolo_plot import YoloPlot
 
 """
 Doc Doc Doc
@@ -33,9 +34,13 @@ def run_query(source_file, trap_num, time_num):
 
     yolo_csv = YoloCSV("data/{}".format(source_file))
     graph_info = yolo_csv.to_graph_info(trap_num, time_num)
+    yolo_tree = YoloTree(graph_info)
+
+    cats = YoloPlot(yolo_tree=yolo_tree, graph_info=graph_info)
+
     tree_info = vars(YoloTree(graph_info=graph_info))
 
-    return json.dumps(tree_info)
+    return cats.fig
 
 
 def load_source_file(file_name):
