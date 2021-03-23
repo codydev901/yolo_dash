@@ -5,6 +5,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+from dash_table import DataTable
 import plotly.graph_objs as go
 from helpers.selection import get_source_files, load_source_file, get_trap_nums, get_time_nums, run_query
 
@@ -70,16 +71,26 @@ query_layout = html.Div([
 
 plot_layout = dcc.Graph(id="graph-1", figure=go.Figure(), responsive=True, style={"height": "100%", "width": "100%"})
 
+raw_layout = DataTable(id="raw-table",
+                       style_table={
+                          "overflowY": "auto",
+                          "overflowX": "auto",
+                          "height": "50vh",
+                        })
+
 layout = [
     dbc.Container([
             dbc.Row([
                 dbc.Col([
                     dbc.Row(query_layout,
                             style={'background-color': 'red'},
-                            className="h-50"),
-                    dbc.Row(html.Div("RAW"),
+                            className="h-50",
+                            justify="center",
+                            ),
+                    dbc.Row(raw_layout,
                             style={'background-color': 'yellow'},
-                            className="h-50"),
+                            className="h-50",
+                            justify="center"),
                     ],
                     width=3),
                 dbc.Col([
@@ -154,7 +165,10 @@ def set_time_num_value(value):
 
 
 # Query
-@app.callback([Output('graph-1', 'figure')],
+@app.callback([Output('graph-1', 'figure'),
+               Output('raw-table', 'columns'),
+               Output('raw-table', 'data')
+               ],
               [Input('query-button', 'n_clicks')],
               [State('source-file-dropdown', 'value'),
                State('trap-num-dropdown', 'value'),
@@ -162,9 +176,12 @@ def set_time_num_value(value):
 def click_query(click, source_file_value, trap_value, time_value):
 
     if source_file_value and trap_value and time_value:
-        return [run_query(source_file_value, trap_value, time_value)]
+        fig, query_df = run_query(source_file_value, trap_value, time_value)
+        dt_columns = [{"name": i, "id": i} for i in query_df.columns],
+        dt_rows = query_df.to_dict('records'),
+        return [fig, dt_columns[0], dt_rows[0]]
 
-    return [go.Figure()]
+    return [go.Figure(), [], []]
 
 
 if __name__ == '__main__':

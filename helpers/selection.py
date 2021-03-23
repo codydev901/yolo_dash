@@ -33,14 +33,14 @@ def get_time_nums(yolo_csv_c, trap_num):
 def run_query(source_file, trap_num, time_num):
 
     yolo_csv = YoloCSV("data/{}".format(source_file))
-    graph_info = yolo_csv.to_graph_info(trap_num, time_num)
+    graph_info, query_df = yolo_csv.to_graph_info(trap_num, time_num)
     yolo_tree = YoloTree(graph_info)
 
     cats = YoloPlot(yolo_tree=yolo_tree, graph_info=graph_info)
 
     tree_info = vars(YoloTree(graph_info=graph_info))
 
-    return cats.fig
+    return cats.fig, query_df
 
 
 def load_source_file(file_name):

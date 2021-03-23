@@ -236,4 +236,7 @@ class YoloCSV:
             vals = [str(round(v, 1)) for v in vals]
             graph_dict["graph"][k] = vals
 
-        return graph_dict
+        print("Unsafe FILL NA")
+        df = df.fillna(1.0)
+
+        return graph_dict, df
