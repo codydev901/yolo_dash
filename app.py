@@ -32,82 +32,152 @@ layout = [
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-query_layout = html.Div([
-    # Title
-    html.H2('Yolo CSV Tree Visualization'),
+# QUERY
+query_layout = dbc.Card([
+        html.H4("Query"),
+        dbc.FormGroup([
+                dbc.Label("Source File", id='source-file-value'),
+                dcc.Dropdown(
+                    id="source-file-dropdown",
+                    options=get_source_files(),
+                    value=None
+                )
+            ]
+        ),
+        dbc.FormGroup([
+                dbc.Label("Trap Number", id="trap-num-value"),
+                dcc.Dropdown(
+                    id="trap-num-dropdown",
+                    options=[],
+                    value=None
+                )
+            ]
+        ),
+        dbc.FormGroup(
+            [
+                dbc.Label("Time Number", id="time-num-value"),
+                dcc.Dropdown(
+                    id="time-num-dropdown",
+                    options=[],
+                    value=None
+                )
+            ]
+        ),
+        html.Button('Query', id='query-button', n_clicks=0),
+        # Shared
+        html.Div(id="yolo-csv", style={"display": "none"}),
+        html.Div(id="yolo-query", style={"display": "none"})
+    ],
+    body=True,
+)
 
-    # Source File
-    html.Div(id='source-file-value'),
-    dcc.Dropdown(
-        id="source-file-dropdown",
-        options=get_source_files(),
-        value=None
-    ),
-
-    # Trap Num
-    html.Div(id='trap-num-value'),
-    dcc.Dropdown(
-        id="trap-num-dropdown",
-        options=[],
-        value=None
-    ),
-
-    # Time Num
-    html.Div(id='time-num-value'),
-    dcc.Dropdown(
-        id="time-num-dropdown",
-        options=[],
-        value=None
-    ),
-
-    # Query
-    html.Button('Query', id='query-button', n_clicks=0),
-
-    # Shared
-    html.Div(id="yolo-csv", style={"display": "none"}),
-    html.Div(id="yolo-query", style={"display": "none"})
-
-])
-
+# PLOT
 plot_layout = dcc.Graph(id="graph-1", figure=go.Figure(), responsive=True, style={"height": "100%", "width": "100%"})
 
-raw_layout = DataTable(id="raw-table",
-                       style_table={
-                          "overflowY": "auto",
-                          "overflowX": "auto",
-                          "height": "50vh",
-                        })
+# RAW
+raw_layout = dbc.Col([
+                    html.H4("Raw Data"),
+                    DataTable(id="raw-table",
+                              style_table={
+                                  "overflowY": "auto",
+                                  "overflowX": "auto",
+                                  "height": "50vh",
+                                },
+                              style_data_conditional=[
+                                   {
+                                       'if': {'row_index': 'odd'},
+                                       'backgroundColor': 'rgb(248, 248, 248)'
+                                   }
+                               ],
+                              style_header={
+                                   'backgroundColor': 'rgb(230, 230, 230)',
+                                   'fontWeight': 'bold'
+                               }
+                              )])
+
+
+# INFO
+info_1 = dbc.Card([
+            dbc.CardBody([
+                html.H4("Total Branch Count", className="card-title"),
+                html.P("Info1", className="card-text")
+            ]),
+    ],
+    style={},
+)
+
+info_2 = dbc.Card([
+            dbc.CardBody([
+                html.H4("Main Branch Count", className="card-title"),
+                html.P("Info2", className="card-text")
+            ]),
+    ],
+    style={},
+)
+
+info_3 = dbc.Card([
+            dbc.CardBody([
+                html.H4("Longest Main Branch", className="card-title"),
+                html.P("Info3", className="card-text")
+            ]),
+    ],
+    style={},
+)
+
+info_4 = dbc.Card([
+            dbc.CardBody([
+                html.H4("Shortest Main Branch", className="card-title"),
+                html.P("Info4", className="card-text")
+            ]),
+    ],
+    style={},
+)
+
+info_5 = dbc.Card([
+            dbc.CardBody([
+                html.H4("Possible Errors", className="card-title"),
+                html.P("Info5", className="card-text")
+            ]),
+    ],
+    style={},
+)
+
+info_layout = [dbc.Col(info_1, width="auto"), dbc.Col(info_2, width="auto"), dbc.Col(info_3, width="auto"),
+               dbc.Col(info_4, width="auto"), dbc.Col(info_5, width="auto")]
+
 
 layout = [
     dbc.Container([
+            html.H1("Yolo CSV Tree Visualization"),
+            html.Hr(),
             dbc.Row([
                 dbc.Col([
                     dbc.Row(query_layout,
-                            style={'background-color': 'red'},
-                            className="h-50",
+                            style={'background-color': 'white'},
                             justify="center",
+                            align="center"
                             ),
                     dbc.Row(raw_layout,
-                            style={'background-color': 'yellow'},
-                            className="h-50",
-                            justify="center"),
+                            style={'background-color': 'white'},
+                            justify="center",
+                            align="center"),
                     ],
                     width=3),
                 dbc.Col([
                     dbc.Row(plot_layout,
-                            style={'background-color': 'orange'},
+                            style={'background-color': 'white'},
                             className="h-75"),
-                    dbc.Row(html.Div("INFO"),
-                            style={'background-color': 'pink'},
+                    dbc.Row(info_layout,
+                            style={'background-color': 'white'},
                             className="h-25")
                     ],
                     width=True)
                     ],
-                    style={'background-color': 'blue'},
+                    style={'background-color': 'white'},
                     className="h-100")
     ],
      fluid=True,
-     style={"height": "100vh"})
+     style={"height": "90vh"})
     ]
 
 app.layout = html.Div(layout)
