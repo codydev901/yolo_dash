@@ -148,7 +148,7 @@ info_layout = [dbc.Col(info_1, width="auto"), dbc.Col(info_2, width="auto"), dbc
 
 layout = [
     dbc.Container([
-            html.H1("Yolo CSV Tree Visualization"),
+            html.H1("Cell Family Tree Analysis and Visualization"),
             html.Hr(),
             dbc.Row([
                 dbc.Col([
