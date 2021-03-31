@@ -61,8 +61,12 @@ class YoloPlot:
         self._plot_info_from_tree_dict()
         self.fig.update_xaxes(range=[0.0, float(self.plot_info["x_bound"])])
         self.fig.update_yaxes(range=[0.0, float(self.plot_info["y_bound"])])
-        self.fig.layout.title["text"] = "TrapNum:{} TStop:{}".format(self.graph_info["trap_num"],
-                                                                     self.graph_info["t_stop"])
+        self.fig.update_layout(showlegend=False)
+        # self.fig.layout.title["text"] = "TrapNum:{} TStop:{}".format(self.graph_info["trap_num"],
+        #                                                              self.graph_info["t_stop"])
+
+        self.fig.layout.yaxis["showticklabels"] = False
+        self.fig.layout.xaxis["title"] = "Time Num"
 
         # Root Node Position(s)
         self.plot_info["root_pos"] = {}
@@ -132,7 +136,7 @@ class YoloPlot:
             if daughter_branch_length > max_daughter_branch_length:
                 max_daughter_branch_length = daughter_branch_length
 
-        self.plot_info["x_bound"] = len(self.graph_info["time_num_obj"]) + 3
+        self.plot_info["x_bound"] = len(self.graph_info["time_num_obj"]) + 1
         self.plot_info["y_bound"] = (max_daughter_branch_length + 2) * 2
 
     def _establish_root_positions(self):

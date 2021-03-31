@@ -32,6 +32,36 @@ layout = [
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
+# HEADER
+header_layout = dbc.Row([
+            dbc.Col([
+                html.H1("Cell Family Tree Analysis and Visualization", style={"color": "#ffffff"})
+                ],
+                width=True),
+            dbc.Col([
+                dbc.Row([
+                    dbc.Card([
+                        dbc.CardImg(src=app.get_asset_url('rd2021.png'), top=True, className='align-self-center'),
+                        ],
+                        style={"height": "30%", "width": "30%", "background-color": "#10366C", "margin-right": "2rem"}, outline=False
+                    ),
+                    dbc.Card([
+                        dbc.CardImg(src=app.get_asset_url('utc2021.png'), top=True, className='align-self-center'),
+                        ],
+                        style={"height": "30%", "width": "30%", "background-color": "#10366C", "margin-right": "3rem"}, outline=False
+                    )
+                ],
+                justify="end")
+            ],
+            width=3),
+        ],
+        justify="end",
+        align="center",
+        style={"padding-top": "1rem", "background-color": "#10366C"}
+
+)
+
+
 # QUERY
 query_layout = dbc.Card([
         html.H4("Query"),
@@ -76,12 +106,12 @@ plot_layout = dcc.Graph(id="graph-1", figure=go.Figure(), responsive=True, style
 
 # RAW
 raw_layout = dbc.Col([
-                    html.H4("Raw Data"),
                     DataTable(id="raw-table",
                               style_table={
                                   "overflowY": "auto",
                                   "overflowX": "auto",
-                                  "height": "50vh",
+                                  "height": "48vh",
+                                  "width": "auto"
                                 },
                               style_data_conditional=[
                                    {
@@ -93,14 +123,15 @@ raw_layout = dbc.Col([
                                    'backgroundColor': 'rgb(230, 230, 230)',
                                    'fontWeight': 'bold'
                                }
-                              )])
-
+                              )],
+                     style={"padding-top": "1rem"}
+                     )
 
 # INFO
 info_1 = dbc.Card([
             dbc.CardBody([
                 html.H4("Total Branch Count", className="card-title"),
-                html.P("Info1", className="card-text")
+                html.P(id="info_t_b_c", className="card-text", children="")
             ]),
     ],
     style={},
@@ -109,7 +140,7 @@ info_1 = dbc.Card([
 info_2 = dbc.Card([
             dbc.CardBody([
                 html.H4("Main Branch Count", className="card-title"),
-                html.P("Info2", className="card-text")
+                html.P(id="info_m_b_c", className="card-text", children="")
             ]),
     ],
     style={},
@@ -118,7 +149,7 @@ info_2 = dbc.Card([
 info_3 = dbc.Card([
             dbc.CardBody([
                 html.H4("Longest Main Branch", className="card-title"),
-                html.P("Info3", className="card-text")
+                html.P(id="info_l_m_b", className="card-text", children="")
             ]),
     ],
     style={},
@@ -127,60 +158,69 @@ info_3 = dbc.Card([
 info_4 = dbc.Card([
             dbc.CardBody([
                 html.H4("Shortest Main Branch", className="card-title"),
-                html.P("Info4", className="card-text")
+                html.P(id="info_s_m_b", className="card-text", children="")
             ]),
     ],
     style={},
 )
 
-info_5 = dbc.Card([
-            dbc.CardBody([
-                html.H4("Possible Errors", className="card-title"),
-                html.P("Info5", className="card-text")
-            ]),
-    ],
-    style={},
-)
+# info_5 = dbc.Card([
+#             dbc.CardBody([
+#                 html.H4("Possible Errors", className="card-title"),
+#                 html.P(id="info_p_e", className="card-text", children="")
+#             ]),
+#     ],
+#     style={},
+# )
 
-info_layout = [dbc.Col(info_1, width="auto"), dbc.Col(info_2, width="auto"), dbc.Col(info_3, width="auto"),
-               dbc.Col(info_4, width="auto"), dbc.Col(info_5, width="auto")]
+info_layout = [dbc.Col(info_1), dbc.Col(info_2,), dbc.Col(info_3),
+               dbc.Col(info_4)]
 
+# Footers
+# footer_layout = dbc.Row([
+#     html.H6("Updated: 03-30-21 - Under Active Development", style={"color": "#ffffff"})
+#     ],
+#     style={"background-color": "#10366C", "margin-top": "1rem"},
+#     align="end")
 
 layout = [
     dbc.Container([
-            html.H1("Cell Family Tree Analysis and Visualization"),
-            html.Hr(),
+            header_layout,
             dbc.Row([
                 dbc.Col([
                     dbc.Row(query_layout,
-                            style={'background-color': 'white'},
+                            style={'background-color': '#10366C'},
                             justify="center",
                             align="center"
                             ),
                     dbc.Row(raw_layout,
-                            style={'background-color': 'white'},
+                            style={'background-color': '#10366C'},
                             justify="center",
                             align="center"),
                     ],
-                    width=3),
+                    width=3, style={"margin-right": "1rem"}),
                 dbc.Col([
                     dbc.Row(plot_layout,
-                            style={'background-color': 'white'},
-                            className="h-75"),
+                            style={'background-color': '#10366C'},
+                            className="h-75"
+                            ),
                     dbc.Row(info_layout,
-                            style={'background-color': 'white'},
-                            className="h-25")
+                            style={'background-color': '#10366C'},
+                            className="h-25",
+                            justify="around",
+                            align="center"
+                            )
                     ],
                     width=True)
                     ],
-                    style={'background-color': 'white'},
-                    className="h-100")
+                    style={'background-color': "#10366C", "margin-right": "0rem", "margin-top": "1rem"},
+                    ),
     ],
      fluid=True,
-     style={"height": "90vh"})
+     style={"background-color": "#10366C", "margin-left": "1rem", "margin-bottom": "1rem"})
     ]
 
-app.layout = html.Div(layout)
+app.layout = html.Div(layout, style={"background-color": "#10366C", "display": "inline-flex"})
 
 
 # Source File
@@ -237,7 +277,11 @@ def set_time_num_value(value):
 # Query
 @app.callback([Output('graph-1', 'figure'),
                Output('raw-table', 'columns'),
-               Output('raw-table', 'data')
+               Output('raw-table', 'data'),
+               Output('info_t_b_c', 'children'),
+               Output('info_m_b_c', 'children'),
+               Output('info_l_m_b', 'children'),
+               Output('info_s_m_b', 'children')
                ],
               [Input('query-button', 'n_clicks')],
               [State('source-file-dropdown', 'value'),
@@ -246,14 +290,25 @@ def set_time_num_value(value):
 def click_query(click, source_file_value, trap_value, time_value):
 
     if source_file_value and trap_value and time_value:
-        fig, query_df = run_query(source_file_value, trap_value, time_value)
+        fig, query_df, web_info = run_query(source_file_value, trap_value, time_value)
         dt_columns = [{"name": i, "id": i} for i in query_df.columns],
         dt_rows = query_df.to_dict('records'),
-        return [fig, dt_columns[0], dt_rows[0]]
+        return [fig,
+                dt_columns[0],
+                dt_rows[0],
+                web_info["total_branch_count"],
+                web_info["main_branch_count"],
+                web_info["longest_main_branch_count"],
+                web_info["shortest_main_branch_count"],
+                ]
 
-    return [go.Figure(), [], []]
+    temp_fig = go.Figure()
+    temp_fig.layout.yaxis["showticklabels"] = False
+    temp_fig.layout.xaxis["title"] = "Time Num"
+
+    return [temp_fig, [], [], "", "", "", ""]
 
 
 if __name__ == '__main__':
 
-    app.run_server(debug=True)
+    app.run_server(debug=False)
