@@ -3,6 +3,7 @@ import json
 from helpers.yolo_csv import YoloCSV
 from helpers.yolo_tree import YoloTree
 from helpers.yolo_plot import YoloPlot
+from helpers.tree_analysis import TreeAnalysis
 
 """
 Doc Doc Doc
@@ -11,7 +12,7 @@ Doc Doc Doc
 
 def get_source_files():
 
-    return [{"label": v, "value": v} for v in os.listdir("data") if "recent_query" not in v]
+    return [{"label": v, "value": v} for v in os.listdir("data") if "recent" not in v]
 
 
 def get_trap_nums(yolo_csv_c):
@@ -40,7 +41,10 @@ def run_query(source_file, trap_num, time_num):
 
     tree_info = vars(YoloTree(graph_info=graph_info))
 
-    print(tree_info)
+    tree_analysis = TreeAnalysis(tree_info)
+    analysis_info = tree_analysis.get_analysis_csv()
+
+    # print(json.dumps(tree_info))
 
     web_info = web_info_from_tree_info(tree_info)
 
@@ -80,8 +84,8 @@ def web_info_from_tree_info(tree_info):
             except IndexError:
                 shortest_main_branch_node = "{} To {}".format(b_e[0], b_e[-1])
 
-    print("yeet")
-    print(web_info)
+#     print("yeet")
+#     print(web_info)
 
     web_info["longest_main_branch_count"] = "{}".format(longest_main_branch_count)
     web_info["longest_main_branch_nodes"] = longest_main_branch_node

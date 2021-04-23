@@ -5,9 +5,13 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+from dash_extensions import Download
+from dash_extensions.snippets import send_file
 from dash_table import DataTable
 import plotly.graph_objs as go
 from helpers.selection import get_source_files, load_source_file, get_trap_nums, get_time_nums, run_query
+
+
 
 """
 layout = [
@@ -29,7 +33,7 @@ layout = [
 """
 
 # Dash Stuff
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], prevent_initial_callbacks=True)
 server = app.server
 
 # HEADER
@@ -164,17 +168,22 @@ info_4 = dbc.Card([
     style={},
 )
 
-# info_5 = dbc.Card([
-#             dbc.CardBody([
-#                 html.H4("Possible Errors", className="card-title"),
-#                 html.P(id="info_p_e", className="card-text", children="")
-#             ]),
-#     ],
-#     style={},
-# )
+info_5 = dbc.Card([
+            dbc.CardBody([
+                html.Button("Download Raw CSV", id="btn-raw", n_clicks=0), Download(id="download-raw")]
+            )],
+    style={},
+)
+
+info_6 = dbc.Card([
+            dbc.CardBody([
+                html.Button("Download Analysis CSV", id="btn-analysis", n_clicks=0), Download(id="download-analysis")]
+            )],
+    style={},
+)
 
 info_layout = [dbc.Col(info_1), dbc.Col(info_2,), dbc.Col(info_3),
-               dbc.Col(info_4)]
+               dbc.Col(info_4), dbc.Col(info_5), dbc.Col(info_6)]
 
 # Footers
 # footer_layout = dbc.Row([
@@ -227,6 +236,7 @@ app.layout = html.Div(layout, style={"background-color": "#10366C", "display": "
 @app.callback([Output('yolo-csv', 'children')],
               [Input('source-file-dropdown', 'value')])
 def get_source_file_options(value):
+    print("Get Source File Options")
     if value:
         yolo_csv = load_source_file(value).to_initial_json()
         return [yolo_csv]
@@ -236,6 +246,7 @@ def get_source_file_options(value):
 @app.callback([Output('source-file-value', 'children')],
               [Input('yolo-csv', 'children')])
 def set_source_file_value(children):
+    print("Set Source File")
     return ["Loaded Source File"] if children else ["Select Source File"]
 
 
@@ -243,6 +254,7 @@ def set_source_file_value(children):
 @app.callback([Output('trap-num-dropdown', 'options')],
               [Input('yolo-csv', 'children')])
 def get_trap_num_options(children):
+    print("Get Trap Num Options")
     if children:
         return [get_trap_nums(yolo_csv_c=children)]
 
@@ -252,7 +264,7 @@ def get_trap_num_options(children):
 @app.callback([Output('trap-num-value', 'children')],
               [Input('trap-num-dropdown', 'value')])
 def set_trap_num_value(value):
-    print("Trap Num Value", value)
+    print("Set Trap Num Value", value)
     return ["Trap Num Selected"] if value else ["Select Trap Num"]
 
 
@@ -260,6 +272,7 @@ def set_trap_num_value(value):
 @app.callback([Output('time-num-dropdown', 'options')],
               [Input('yolo-csv', 'children'), Input('trap-num-dropdown', 'value')])
 def get_time_num_options(children, value):
+    print("Get Time Num Options")
 
     if children and value:
         return [get_time_nums(yolo_csv_c=children, trap_num=value)]
@@ -281,7 +294,7 @@ def set_time_num_value(value):
                Output('info_t_b_c', 'children'),
                Output('info_m_b_c', 'children'),
                Output('info_l_m_b', 'children'),
-               Output('info_s_m_b', 'children')
+               Output('info_s_m_b', 'children'),
                ],
               [Input('query-button', 'n_clicks')],
               [State('source-file-dropdown', 'value'),
@@ -289,10 +302,20 @@ def set_time_num_value(value):
                State('time-num-dropdown', 'value')])
 def click_query(click, source_file_value, trap_value, time_value):
 
+    # print("Click Query")
+    # print(source_file_value)
+    # print(trap_value)
+    # print(time_value)
+    # print("*")
+
     if source_file_value and trap_value and time_value:
         fig, query_df, web_info = run_query(source_file_value, trap_value, time_value)
         dt_columns = [{"name": i, "id": i} for i in query_df.columns],
         dt_rows = query_df.to_dict('records'),
+
+        # print("INFO")
+        # print(analysis_info)
+
         return [fig,
                 dt_columns[0],
                 dt_rows[0],
@@ -307,6 +330,22 @@ def click_query(click, source_file_value, trap_value, time_value):
     temp_fig.layout.xaxis["title"] = "Time Num"
 
     return [temp_fig, [], [], "", "", "", ""]
+
+
+@app.callback(Output("download-raw", "data"), [Input("btn-raw", "n_clicks"), State('raw-table', 'data')])
+def generate_raw_csv(clicks, table_data):
+
+    print("GENERATE RAW CSV")
+    if table_data:
+        return send_file("data/recent_query.csv")
+
+
+@app.callback(Output("download-analysis", "data"), [Input("btn-analysis", "n_clicks"), State('raw-table', 'data')])
+def generate_raw_csv(clicks, table_data):
+
+    print("GENERATE ANALYSIS CSV")
+    if table_data:
+        return send_file("data/recent_analysis.csv")
 
 
 if __name__ == '__main__':

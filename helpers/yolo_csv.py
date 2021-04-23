@@ -67,6 +67,9 @@ class YoloCSV:
 
         res = self.df.query(query)
 
+        # print("Unsafe FILL NA - Query")
+        # res = res.fillna(1.0)
+
         if write_csv:
             res.to_csv("data/recent_query.csv", index=False)
 
