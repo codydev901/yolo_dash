@@ -1,6 +1,7 @@
 import os
 import json
 from helpers.yolo_csv import YoloCSV
+from helpers.yolo_csv_v2 import YoloCSVTwo
 from helpers.yolo_tree import YoloTree
 from helpers.yolo_plot import YoloPlot
 from helpers.tree_analysis import TreeAnalysis
@@ -33,13 +34,25 @@ def get_time_nums(yolo_csv_c, trap_num):
 
 def run_query(source_file, trap_num, time_num):
 
-    yolo_csv = YoloCSV("data/{}".format(source_file))
+    if "all" in source_file:
+        print("V2 YoloCSV")
+        yolo_csv = YoloCSVTwo("data/{}".format(source_file))
+    else:
+        print("V1 YoloCSV")
+        yolo_csv = YoloCSV("data/{}".format(source_file))
     graph_info, query_df = yolo_csv.to_graph_info(trap_num, time_num)
+
+    # print("yeet")
+    # print(graph_info)
+
     yolo_tree = YoloTree(graph_info)
 
     cats = YoloPlot(yolo_tree=yolo_tree, graph_info=graph_info)
 
     tree_info = vars(YoloTree(graph_info=graph_info))
+
+    print("yeet")
+    print(tree_info)
 
     tree_analysis = TreeAnalysis(tree_info)
     analysis_info = tree_analysis.get_analysis_csv()
