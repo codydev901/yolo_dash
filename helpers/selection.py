@@ -3,7 +3,9 @@ import json
 from helpers.yolo_csv import YoloCSV
 from helpers.yolo_csv_v2 import YoloCSVTwo
 from helpers.yolo_tree import YoloTree
+from helpers.yolo_tree_v2 import YoloTreeTwo
 from helpers.yolo_plot import YoloPlot
+from helpers.yolo_plot_v2 import YoloPlotTwo
 from helpers.tree_analysis import TreeAnalysis
 
 """
@@ -28,6 +30,7 @@ def get_time_nums(yolo_csv_c, trap_num):
     loaded_yolo_csv_c = json.loads(yolo_csv_c)
     yolo_csv = YoloCSV(loaded_yolo_csv_c["file_name"])
     time_nums = yolo_csv.get_time_nums(trap_num=trap_num)
+    time_nums.sort(reverse=True)
 
     return [{"label": int(v), "value": int(v)} for v in time_nums]
 
@@ -40,33 +43,48 @@ def run_query(source_file, trap_num, time_num):
     else:
         print("V1 YoloCSV")
         yolo_csv = YoloCSV("data/{}".format(source_file))
+
     graph_info, query_df = yolo_csv.to_graph_info(trap_num, time_num)
 
     # print("yeet")
     # print(graph_info)
 
-    yolo_tree = YoloTree(graph_info)
+    # yolo_tree = YoloTree(graph_info)
 
-    cats = YoloPlot(yolo_tree=yolo_tree, graph_info=graph_info)
+    plot = YoloPlotTwo(graph_info=graph_info)
+    tree = YoloTreeTwo(graph_info=graph_info)
 
-    tree_info = vars(YoloTree(graph_info=graph_info))
+    rls_info = tree.get_rls_info()
 
-    print("yeet")
-    print(tree_info)
+    print(rls_info)
 
-    tree_analysis = TreeAnalysis(tree_info)
-    analysis_info = tree_analysis.get_analysis_csv()
+    # tree_info = vars(YoloTree(graph_info=graph_info))
+
+    # print("yeet")
+    # print(tree_info)
+
+    # tree_analysis = TreeAnalysis(tree_info)
+    # analysis_info = tree_analysis.get_analysis_csv()
 
     # print(json.dumps(tree_info))
 
-    web_info = web_info_from_tree_info(tree_info)
+    web_info = web_info_from_tree_info(tree_info=None)
 
-    return cats.fig, query_df, web_info
+    return plot.fig, query_df, web_info
 
 
 def web_info_from_tree_info(tree_info):
 
     web_info = dict()
+    web_info["longest_main_branch_count"] = ""
+    web_info["longest_main_branch_nodes"] = ""
+    web_info["shortest_main_branch_count"] = ""
+    web_info["shortest_main_branch_nodes"] = ""
+    web_info["total_branch_count"] = ""
+    web_info["main_branch_count"] = ""
+
+    if not tree_info:
+        return web_info
 
     # Total Branch Count
     web_info["total_branch_count"] = len(tree_info["tree_info"]["branch_nodes"])

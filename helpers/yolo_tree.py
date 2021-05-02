@@ -35,7 +35,7 @@ class YoloTree:
             for e in edges:
                 if e[-1] != branch_node[-1]:
                     self.tree_info["branch_edges"].append([branch_node, e])
-                    break
+                    # break
 
     def _populate_tree_dict(self):
         """
@@ -55,6 +55,8 @@ class YoloTree:
 
         for node in self.graph_dict:
 
+            # print(node)
+
             if node in branch_nodes:
                 continue
 
@@ -69,6 +71,7 @@ class YoloTree:
                 try:
                     last_continue_node = self.tree_dict[branch_node][-1]
                 except IndexError:
+                    print("INDEX ERROR", branch_node)
                     continue
                 if last_continue_node == parent_node:
                     self.tree_dict[branch_node].append(node)

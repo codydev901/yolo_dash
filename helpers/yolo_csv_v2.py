@@ -88,6 +88,9 @@ class YoloCSVTwo:
         graph_dict["time_num_obj"].append([start_time, len_time_step])
         graph_helper["last_num_obj"] = len_time_step
 
+        if len_time_step > 1:
+            raise ValueError("Unsupported Num Root Nodes")
+
         for i, node in enumerate(start_time_df.to_dict('records')):
 
             pred_id = node["predecessorID"]
@@ -249,17 +252,19 @@ class YoloCSVTwo:
                     if node_name != pred_id_last_node_name:
                         graph_dict["graph"][pred_id_last_node_name].append(node_name)
                     if time_num > 220 and pred_id == 1:
-                        print("*")
-                        print(pred_id_last_node_name, graph_dict["graph"][pred_id_last_node_name])
-                        print(node_name, graph_dict["graph"][node_name])
-                        print("*")
+                        pass
+                        # print("*")
+                        # print(pred_id_last_node_name, graph_dict["graph"][pred_id_last_node_name])
+                        # print(node_name, graph_dict["graph"][node_name])
+                        # print("*")
                 except KeyError:
                     print("Error Pred_Id_Last_Node_Name")
                     print(node_name)
                     print(pred_id_last_node_name)
                     print(node)
                     print(graph_helper)
-                    sys.exit()
+                    raise KeyError()
+                    # sys.exit()
 
                 graph_helper["pred_id_last_node"][pred_id] = node_name
 
