@@ -30,33 +30,28 @@ def get_time_nums(yolo_csv_c, trap_num):
     loaded_yolo_csv_c = json.loads(yolo_csv_c)
     yolo_csv = YoloCSV(loaded_yolo_csv_c["file_name"])
     time_nums = yolo_csv.get_time_nums(trap_num=trap_num)
-    time_nums.sort(reverse=True)
+    # time_nums.sort(reverse=True)
 
     return [{"label": int(v), "value": int(v)} for v in time_nums]
 
 
 def run_query(source_file, trap_num, time_num):
 
-    if "all" in source_file:
-        print("V2 YoloCSV")
-        yolo_csv = YoloCSVTwo("data/{}".format(source_file))
-    else:
-        print("V1 YoloCSV")
-        yolo_csv = YoloCSV("data/{}".format(source_file))
+    yolo_csv = YoloCSV("data/{}".format(source_file))
 
     graph_info, query_df = yolo_csv.to_graph_info(trap_num, time_num)
 
-    # print("yeet")
-    # print(graph_info)
+    print("Graph Info")
+    print(graph_info)
 
     # yolo_tree = YoloTree(graph_info)
 
     plot = YoloPlotTwo(graph_info=graph_info)
-    tree = YoloTreeTwo(graph_info=graph_info)
+    # tree = YoloTreeTwo(graph_info=graph_info)
 
-    rls_info = tree.get_rls_info()
+    # rls_info = tree.get_rls_info()
 
-    print(rls_info)
+    # print(rls_info)
 
     # tree_info = vars(YoloTree(graph_info=graph_info))
 

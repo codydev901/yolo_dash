@@ -32,9 +32,9 @@ def get_rls_from_trap(source_file, trap_num, time_num):
 
 def main():
 
-    f_n = "FT_BC8_all_traps_short.csv"
+    f_n = "FT_BC8_yolo_short_v2.csv"
 
-    all_traps = json.loads(YoloCSVTwo(file_path="data/FT_BC8_all_traps_short.csv").to_initial_json())["trap_nums"]
+    all_traps = json.loads(YoloCSV(file_path="data/FT_BC8_yolo_short_v2.csv").to_initial_json())["trap_nums"]
 
     rls_all = [["trap_num", "pred_id", "time_start", "time_end"]]
     did_error = [["trap_num", "error"]]
