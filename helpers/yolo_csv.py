@@ -130,7 +130,7 @@ class YoloCSV:
 
         # Sort Step Info, Assignment will try to associate the lower current pred_id to the next lowest etc.
         step_info.sort(key=lambda x: x["predecessorID"])
-
+        isolated_pred_id = None
         parsed_steps = []
         for step in step_info:
             step_arr = [step[k] for k in step]
@@ -141,12 +141,21 @@ class YoloCSV:
                 try:
                     next_pred_id = assign_pred_ids.pop()    # Pull from sorted assign_pred_ids, de-que
                 except IndexError:
+                    if not isolated_pred_id:
+                        try:
+                            isolated_pred_id = max(graph_helper["next_pred_ids"]) + 1
+                        except ValueError:
+                            isolated_pred_id = step["predecessorID"] + 1
+                    else:
+                        isolated_pred_id += 1
+
+                    next_pred_id = isolated_pred_id
                     print("POP ERROR")
                     print(step_info)
                     print(step)
                     print(active_pred_ids)
                     print(graph_helper["next_pred_ids"])
-                    sys.exit()
+                    # sys.exit()
 
                 print("GOT BRANCH:", branch_node_name, step_arr, "NextPredID:{}".format(next_pred_id))
                 step["predecessorID"] = next_pred_id
@@ -170,6 +179,7 @@ class YoloCSV:
 
         # graph_dict is returned
         graph_dict = dict()
+        graph_dict["file_name"] = self.file_path.rsplit("/", 1)[-1]
         graph_dict["trap_num"] = trap_num
         graph_dict["t_stop"] = t_stop
         graph_dict["graph"] = {}
@@ -229,6 +239,8 @@ class YoloCSV:
                 except KeyError:
                     print("Error Pred_Id_Last_Node_Name")
                     print(node)
+                    print(pred_id_last_node_name)
+                    print(node_name)
                     print(graph_helper)
                     sys.exit()
 
